@@ -6,11 +6,6 @@
     <div class="output">
       <div class="result" id="result"></div>
     </div>
-    <div class="hint">
-      <div><i class="fas fa-square"></i>：半形空白</div>
-      <div><i class="fas fa-clone"></i>：全形空白&emsp;</div>
-      <div><i class="fas fa-hand-point-down"></i>：換行符號</div>
-    </div>
   </div>
 </template>
 
@@ -36,36 +31,34 @@ export default {
     transferContent: function () {
       const DOM_result = document.getElementById('result');
       const regex = /[A-Za-z]+||[0-9]+\.[0-9]+/g;
+      let newTypeOrigin = this.typeOrigin;
+
+      // check space front
+      newTypeOrigin = newTypeOrigin.replace(/[\u4e00-\u9fa5]+[.,;?$A-Za-z0-9]+/g, (match) => {
+        const headIndex = match.search(/[.,;?$A-Za-z0-9]/);
+        const front = match.slice(0, headIndex);
+        const end = match.slice(headIndex);
+        return front + ' ' + end;
+      })
+      // check space end
+      newTypeOrigin = newTypeOrigin.replace(/[.,;?$A-Za-z0-9]+[\u4e00-\u9fa5]+/g, (match) => {
+        const headIndex = match.search(/[\u4e00-\u9fa5]/);
+        const front = match.slice(0, headIndex);
+        const end = match.slice(headIndex);
+        return front + ' ' + end;
+      })
+      
+      this.typeOrigin = newTypeOrigin;
+
+      // --------
       let typeContent = this.typeOrigin;
 
-      // get English words
-      const englishWords = typeContent.match(/[.,;?$A-Za-z0-9]+/g) || [];
-      englishWords.forEach((word) => {
-        const wordHead = typeContent.indexOf(word);
-        const wordTail = wordHead + word.length -1;
-        // console.log(typeContent.charAt(wordHead) + ', ' + typeContent.charAt(wordTail))
-        if (typeContent.charAt(wordHead - 1) !== ' ' ||
-            typeContent.charAt(wordTail + 1) !== ' ') {
-          console.log(typeContent.slice(0, wordHead) + '!' + typeContent.slice(wordHead));
-          // console.log('fail')
-        }
-        else {
-          console.log('success')
-        }
-      })
-      // numberWords.forEach((word) => {
-      //   console.log(word)
-      //   const wordHead = typeContent.indexOf(word);
-      //   console.log(typeContent.indexOf(word));
-      //   console.log(typeContent.indexOf(word) + word.length);
-      // })
-
       // highlight half-space
-      typeContent = typeContent.replace(/[\u0020]/g, '<i class="symbol half"></i>');
+      typeContent = typeContent.replace(/[\u0020]/g, '<i class="symbol half">&nbsp;</i>');
       
       // highlight hald-space
-      typeContent = typeContent.replace(/[\u2003]/g, '<i class="symbol fill"></i>');
-      typeContent = typeContent.replace(/[\u3000]/g, '<i class="symbol fill"></i>');
+      typeContent = typeContent.replace(/[\u2003]/g, '<i class="symbol fill">&emsp;</i>');
+      typeContent = typeContent.replace(/[\u3000]/g, '<i class="symbol fill">&emsp;</i>');
       
       // highlight break line
       typeContent = typeContent.replace(/\n/g, '<i class="symbol break"><i class="fas fa-level-down-alt"></i></i><br/>');
@@ -93,12 +86,9 @@ export default {
   .output {
     padding: 24px;
     width: 50%;
-    font-size: 24px;
+    font-size: 18px;
     box-sizing: border-box;
     overflow-y: auto;
-  }
-  .result {
-    /* overflow-y: auto; */
   }
   .hint {
     position: absolute;
@@ -112,7 +102,7 @@ export default {
     box-shadow: 0;
     width: 100%;
     height: 100%;
-    font-size: 24px;
+    font-size: 18px;
   }
   .textarea:focus {
     outline: none;
@@ -122,13 +112,13 @@ export default {
     vertical-align: middle;
     margin: 0 2px;
     border: 1px dashed hsl(0, 0%, 70%);
-    line-height: 24px;
+    line-height: 18px;
   }
   .half {
     width: 6px;
   }
   .fill {
-    width: 24px;
+    width: 18px;
   }
   .half:before,
   .fill:before {
@@ -136,7 +126,7 @@ export default {
     visibility: hidden;
   }
   .break {
-    width: 24px;
+    width: 18px;
     text-align: center;
   }
   .break i {
