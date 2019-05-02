@@ -1,5 +1,5 @@
 module.exports = {
   // options...
-  baseUrl: process.env.NODE_ENV === 'production' ? '../' : '/',
+  baseUrl: process.env.NODE_ENV === 'production' ? './' : '/',
   // outputDir: 'build',
 }
