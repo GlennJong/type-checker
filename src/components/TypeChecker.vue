@@ -8,13 +8,18 @@
     </div>
     <div class="hint">
       <div><i class="fas fa-square"></i>：半形空白</div>
-      <div><i class="fas fa-clone"></i>：全形空白</div>
+      <div><i class="fas fa-clone"></i>：全形空白&emsp;</div>
       <div><i class="fas fa-hand-point-down"></i>：換行符號</div>
     </div>
   </div>
 </template>
 
 <script>
+// String splice
+String.prototype.splice = function(idx, rem, str) {
+    return this.slice(0, idx) + str + this.slice(idx + Math.abs(rem));
+};
+
 export default {
   name: 'TypeChecker',
   props: {
@@ -30,16 +35,40 @@ export default {
   methods: {
     transferContent: function () {
       const DOM_result = document.getElementById('result');
+      const regex = /[A-Za-z]+||[0-9]+\.[0-9]+/g;
       let typeContent = this.typeOrigin;
 
-      // highlight hald-space
-      typeContent = typeContent.replace(/[\u0020]/g, '<i class="fas fa-square"></i>');
+      // get English words
+      const englishWords = typeContent.match(/[.,;?$A-Za-z0-9]+/g) || [];
+      englishWords.forEach((word) => {
+        const wordHead = typeContent.indexOf(word);
+        const wordTail = wordHead + word.length -1;
+        // console.log(typeContent.charAt(wordHead) + ', ' + typeContent.charAt(wordTail))
+        if (typeContent.charAt(wordHead - 1) !== ' ' ||
+            typeContent.charAt(wordTail + 1) !== ' ') {
+          console.log(typeContent.slice(0, wordHead) + '!' + typeContent.slice(wordHead));
+          // console.log('fail')
+        }
+        else {
+          console.log('success')
+        }
+      })
+      // numberWords.forEach((word) => {
+      //   console.log(word)
+      //   const wordHead = typeContent.indexOf(word);
+      //   console.log(typeContent.indexOf(word));
+      //   console.log(typeContent.indexOf(word) + word.length);
+      // })
+
+      // highlight half-space
+      typeContent = typeContent.replace(/[\u0020]/g, '<i class="symbol half"></i>');
       
       // highlight hald-space
-      typeContent = typeContent.replace(/[\u2003]/g, '<i class="fas fa-clone"></i>');
+      typeContent = typeContent.replace(/[\u2003]/g, '<i class="symbol fill"></i>');
+      typeContent = typeContent.replace(/[\u3000]/g, '<i class="symbol fill"></i>');
       
       // highlight break line
-      typeContent = typeContent.replace(/\n/g, '<i class="far fa-hand-point-down"></i><br/>');
+      typeContent = typeContent.replace(/\n/g, '<i class="symbol break"><i class="fas fa-level-down-alt"></i></i><br/>');
 
       DOM_result.innerHTML = typeContent;
     },
@@ -47,15 +76,12 @@ export default {
 }
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
+<style>
   .type-checker {
     display: flex;
     margin: auto;
     width: 100%;
     height: 100%;
-    /* max-width: 80%; */
-    /* max-height: 80%; */
     box-shadow: 2px 4px 12px hsla(0, 0%, 0%, .5);
   }
   .input {
@@ -69,6 +95,10 @@ export default {
     width: 50%;
     font-size: 24px;
     box-sizing: border-box;
+    overflow-y: auto;
+  }
+  .result {
+    /* overflow-y: auto; */
   }
   .hint {
     position: absolute;
@@ -87,16 +117,31 @@ export default {
   .textarea:focus {
     outline: none;
   }
-  .far, .fas {
+  .symbol {
+    display: inline-block;
+    vertical-align: middle;
     margin: 0 2px;
+    border: 1px dashed hsl(0, 0%, 70%);
+    line-height: 24px;
   }
-  .fa-square {
-    font-size: 12px;
+  .half {
+    width: 6px;
   }
-  .fa-clone {
-    font-size: 12px;
+  .fill {
+    width: 24px;
   }
-  .fa-hand-point-down {
-    font-size: 14px;
+  .half:before,
+  .fill:before {
+    content: "|";
+    visibility: hidden;
+  }
+  .break {
+    width: 24px;
+    text-align: center;
+  }
+  .break i {
+    transform: rotate(90deg);
+    font-size: 10px;
+    color: hsl(0, 0%, 60%);
   }
 </style>
