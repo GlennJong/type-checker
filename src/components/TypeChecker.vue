@@ -30,22 +30,25 @@ export default {
   methods: {
     transferContent: function () {
       const DOM_result = document.getElementById('result');
-      const regex = /[A-Za-z]+||[0-9]+\.[0-9]+/g;
       let newTypeOrigin = this.typeOrigin;
 
       // check space front
-      newTypeOrigin = newTypeOrigin.replace(/[\u4e00-\u9fa5]+[.,;?$A-Za-z0-9]+/g, (match) => {
-        const headIndex = match.search(/[.,;?$A-Za-z0-9]/);
+      newTypeOrigin = newTypeOrigin.replace(/[\u4e00-\u9fa5]+[\\/.,;?$A-Za-z0-9]+/g, (match) => {
+        const headIndex = match.search(/[\\/.,;?$A-Za-z0-9]/);
         const front = match.slice(0, headIndex);
         const end = match.slice(headIndex);
         return front + ' ' + end;
       })
       // check space end
-      newTypeOrigin = newTypeOrigin.replace(/[.,;?$A-Za-z0-9]+[\u4e00-\u9fa5]+/g, (match) => {
+      newTypeOrigin = newTypeOrigin.replace(/[\\/.,;?$A-Za-z0-9]+[\u4e00-\u9fa5]+/g, (match) => {
         const headIndex = match.search(/[\u4e00-\u9fa5]/);
         const front = match.slice(0, headIndex);
         const end = match.slice(headIndex);
         return front + ' ' + end;
+      })
+      // replace breakline style
+      newTypeOrigin = newTypeOrigin.replace(/\n+\n/g, () => {
+        return '\n\u2003\n'
       })
       
       this.typeOrigin = newTypeOrigin;
