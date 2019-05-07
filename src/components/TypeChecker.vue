@@ -48,7 +48,7 @@ export default {
       })
       // replace breakline style
       newTypeOrigin = newTypeOrigin.replace(/\n+\n/g, () => {
-        return '\n\u2003\n'
+        return '\n\u3000\n'
       })
       
       this.typeOrigin = newTypeOrigin;
@@ -59,7 +59,7 @@ export default {
       // highlight half-space
       typeContent = typeContent.replace(/[\u0020]/g, '<i class="symbol half">&nbsp;</i>');
       
-      // highlight hald-space
+      // highlight full-space
       typeContent = typeContent.replace(/[\u2003]/g, '<i class="symbol fill">&emsp;</i>');
       typeContent = typeContent.replace(/[\u3000]/g, '<i class="symbol fill">&emsp;</i>');
       
